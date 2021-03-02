@@ -27,7 +27,7 @@ day 3
 树需要有插入功能
 插入功能很简单，递归查找每一层的节点，如果没有匹配到当前part的节点，则新建一个
 
-节点调用search函数，如果当前节点part是传入的part则用此节点递归调用下一层节点，否则新建节点，用新建节点调用下一层节点
+节点调用insert函数，如果当前节点part是传入的part则用此节点递归调用下一层节点，否则新建节点，用新建节点调用下一层节点
 基于这句话设计api
 pattern: 待匹配路由
 path: 待匹配路由组成的词典
@@ -37,7 +37,29 @@ insert(pattern, paths []string, height int)
 错误
 search 基于树递归应该先考虑逻辑设计api而不是数据结构，但是利用数据结构完成api的实现
 
+我的版本的实现缺点
+Insert中需要不断进行路由的循环,没有解耦路由的迭代
+
+
+强调
+步骤
+Insert:
+1. 依次遍历path，拆分各个part
+2. node插入part(path的一部分)
+func (n node) insert(part string) {}
+
 
 
 匹配
-insert
+search
+错误
+我这里少想了一种错误，当同一层可以匹配多个节点，例如zrg和:name
+
+node调用search(part)获取当前层的所有节点nodes，依次调用nodes中的node调用search(next part)获取下一层的节点, 直到返回节点存在完整的path
+
+
+node调用search(part) 如果符合（最终节点查找）则返回最终节点，否则，查找part匹配的中间节点，并且中间节点一次调用search(next part)
+1. 判断最终节点
+2. part如何变成next part 
+3. search(part)接口实现
+通过path和height实现

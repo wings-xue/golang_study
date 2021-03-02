@@ -81,7 +81,10 @@ func (n *Node) Insert(path string) {
 
 // 返回路由对应的节点
 // 寻找path是否路过当前节点的子节点中
-//
+// bad:
+// 1. 最终节点的判断不完美,通过最后的path为空判断, 判断啰嗦并且不直观
+// 2. 都要解析path中part部分,不直观
+// 3. search 实现部分差不多但是由于前两个设计, 导致代码不通俗易懂
 func (n *Node) Search(path string) *NodeInfo {
 
 	if path == "" || path == "/" {
