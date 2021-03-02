@@ -53,6 +53,7 @@ func removeSplitSlice(s []string) []string {
 	return out
 }
 
+// 没有解耦路由处理和节点插入
 func (n *Node) Insert(path string) {
 	tree := n
 	for _, part := range strings.Split(path, "/") {
