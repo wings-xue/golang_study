@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -60,10 +61,54 @@ func TestGoodNode_insert(t *testing.T) {
 			},
 		},
 	}
+
+	searchTests := []struct {
+		name    string
+		pattern string
+		want    string
+	}{
+		{
+			pattern: "/file/app/style.css",
+			want:    "/file/*filepath",
+		},
+		{
+			pattern: "/say",
+			want:    "",
+		},
+		{
+			pattern: "/",
+			want:    "/",
+		},
+		{
+			pattern: "/index/sz/say",
+			want:    "/index/:name/say",
+		},
+		{
+			pattern: "/index/body",
+			want:    "/index/body",
+		},
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.n.insert(tt.args.pattern, tt.args.paths, tt.args.height)
+
 		})
+	}
+	for _, stt := range searchTests {
+		t.Run("", func(t *testing.T) {
+			out := n.search(stt.pattern, parsePath(stt.pattern), 0)
+			if out != nil {
+				if !reflect.DeepEqual(out.pattern, stt.want) {
+					t.Logf("want:%s, search rst: %s\n", stt.want, out.pattern)
+				}
+			} else {
+				if stt.want != "" {
+					t.Logf("want:%s, search rst: %s\n", stt.want, "nil")
+				}
+			}
+
+		})
+
 	}
 	fmt.Println(n)
 }

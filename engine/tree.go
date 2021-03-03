@@ -19,8 +19,9 @@ func NewGoodNode() *GoodNode {
 func NewRoot() *GoodNode {
 	child := make([]*GoodNode, 0)
 	return &GoodNode{
-		child: child,
-		part:  "/",
+		child:   child,
+		part:    "/",
+		pattern: "/",
 	}
 }
 
@@ -30,11 +31,12 @@ func NewRoot() *GoodNode {
 // 2. 如果不存在,则新建节点
 // 3. nodechild继续执行insert(next part)
 func (n *GoodNode) insert(pattern string, paths []string, height int) {
-	if len(paths) == 0 || len(paths) == height {
+	if len(paths) == 0 {
 		return
 	}
-	if len(paths) == height-1 {
-		n.part = pattern
+	if len(paths) == height {
+		n.pattern = pattern
+		return
 	}
 
 	part := paths[height]
@@ -96,7 +98,7 @@ func searchChildALL(n *GoodNode, part string) []*GoodNode {
 // 1. 如何确定最终节点
 // 2. 如何设计获取part
 func (n *GoodNode) search(pattern string, paths []string, height int) *GoodNode {
-	if paths[0] == "" {
+	if len(paths) == 0 {
 		return NewRoot()
 	}
 	// 最后的节点直接返回
