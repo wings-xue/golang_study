@@ -63,3 +63,14 @@ node调用search(part) 如果符合（最终节点查找）则返回最终节点
 2. part如何变成next part 
 3. search(part)接口实现
 通过path和height实现
+
+
+router 
+
+插入
+router调用insert， 插入method，addr到树形结构中
+
+
+查询
+search
+router调用search，通过method和addr查找相应的handleFunc

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // 处理请求和返回结果
@@ -16,6 +17,7 @@ type Context struct {
 	Method string
 	// response info
 	StatusCode int
+	Param      map[string]string
 }
 
 func (c *Context) PostForm(key string) string {
@@ -58,4 +60,17 @@ func (c *Context) HTML(code int, html string) {
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)
 	c.Writer.Write([]byte(html))
+}
+
+func (c *Context) FindParam(paths, patterns []string) {
+	for i, part := range patterns {
+		if part[0] == ':' {
+			c.Param[part[1:]] = paths[i]
+		}
+		if part[0] == '*' {
+			c.Param[part[1:]] = strings.Join(paths[i:], "/")
+			break
+		}
+
+	}
 }
