@@ -74,3 +74,51 @@ router调用insert， 插入method，addr到树形结构中
 查询
 search
 router调用search，通过method和addr查找相应的handleFunc
+
+
+分组
+r := gee.New()
+v1 := r.Group("/v1")
+v1.GET("/", func(c *gee.Context) {
+	c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
+})
+实现
+前缀和路由可以通过字符串匹配
+前缀和handle存在一对多
+
+感觉这个结构不是想出来的。。是基于代码开发过程中发现的
+
+router创建组
+1. router继承group, 获取group的Group函数
+组注册路由和路由处理函数
+2. group执行GET函数
+   1. 添加前缀和路由到router树中
+
+确定对象
+
+
+组
+{
+   前缀
+   中间件函数列表
+   engine
+}
+
+
+
+
+day5 中间件
+思路
+Use 中间件加载进入上下
+
+如何控制执行流程
+1. 通过列表和index控制执行流程而不是钩子函数
+
+由于这里不是一个函数在固定位置执行
+
+
+before
+handle next 
+later
+
+由于通过use注册进去函数

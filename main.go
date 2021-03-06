@@ -8,20 +8,19 @@ import (
 func main() {
 
 	r := engine.New()
+	r.Use(engine.Logger()) // global midlleware
 	r.GET("/", func(c *engine.Context) {
-		c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
-	})
-	r.GET("/hello/:name", func(c *engine.Context) {
-		// expect /hello?name=geektutu
-		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Param["name"], c.Param["name"])
+		c.HTML(http.StatusOK, "<h1>Hello engine</h1>")
 	})
 
-	r.POST("/login", func(c *engine.Context) {
-		c.JSON(http.StatusOK, map[string]string{
-			"username": c.PostForm("username"),
-			"password": c.PostForm("password"),
+	v2 := r.Group("/v2")
+	v2.Use(engine.OnlyForV2()) // v2 group middleware
+	{
+		v2.GET("/hello/:name", func(c *engine.Context) {
+			// expect /hello/enginektutu
+			c.String(http.StatusOK, "hello %s, you're at %s\n", c.Param["name"], c.Path)
 		})
-	})
+	}
 
-	r.Run(":8881")
+	r.Run(":9999")
 }

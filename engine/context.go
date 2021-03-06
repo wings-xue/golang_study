@@ -18,6 +18,8 @@ type Context struct {
 	// response info
 	StatusCode int
 	Param      map[string]string
+	Index      int
+	Middle     []handleFunc
 }
 
 func (c *Context) PostForm(key string) string {
@@ -72,5 +74,13 @@ func (c *Context) FindParam(paths, patterns []string) {
 			break
 		}
 
+	}
+}
+
+// 实现next，
+func (c *Context) Next() {
+	c.Index = c.Index + 1
+	for ; c.Index < len(c.Middle); c.Index++ {
+		c.Middle[c.Index](c)
 	}
 }

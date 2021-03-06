@@ -3,6 +3,7 @@ package engine
 import (
 	"io"
 	"net/http"
+	"strings"
 )
 
 // 处理路由
@@ -14,17 +15,24 @@ func routerKey(method, addr string) string {
 }
 
 type Router struct {
-	handle map[string]handleFunc
-	roots  map[string]*GoodNode
+	handle       map[string]handleFunc
+	roots        map[string]*GoodNode
+	routerGroups []*RouterGroup
+	*RouterGroup
 }
 
 func New() *Router {
 	handle := make(map[string]handleFunc)
 	roots := make(map[string]*GoodNode)
-	return &Router{
+	router := &Router{
 		handle: handle,
 		roots:  roots,
 	}
+	routerGroup := RouterGroup{
+		router: router,
+	}
+	router.RouterGroup = &routerGroup
+	return router
 }
 
 func (e *Router) insert(method, addr string) {
@@ -66,21 +74,35 @@ func (e *Router) POST(addr string, handleFunc handleFunc) {
 }
 
 func (e *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	addr := req.URL.Path
-	method := req.Method
+
 	c := Context{
 		Writer: w,
 		Req:    req,
 		Param:  map[string]string{},
+		Index:  -1,
 	}
+
+	for _, group := range e.routerGroups {
+		if strings.HasPrefix(req.URL.Path, group.prefix) {
+			c.Middle = append(c.Middle, group.middle...)
+		}
+	}
+	c.Middle = append(c.Middle, e.RouterGroup.middle...)
+
+	e.RunHandle(&c)
+}
+
+func (e *Router) RunHandle(c *Context) {
+	addr := c.Req.URL.Path
+	method := c.Req.Method
 	handleFunc, paths, patterns := e.search(method, addr)
 	if handleFunc == nil {
-		io.WriteString(w, "404 NOT FOUND\n")
+		io.WriteString(c.Writer, "404 NOT FOUND\n")
 		return
 	}
 	c.FindParam(paths, patterns)
-
-	handleFunc(&c)
+	c.Middle = append(c.Middle, e.handle[routerKey(method, addr)])
+	c.Next()
 }
 
 func (e *Router) Run(addr string) {
