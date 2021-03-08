@@ -101,7 +101,8 @@ func (e *Router) RunHandle(c *Context) {
 		return
 	}
 	c.FindParam(paths, patterns)
-	c.Middle = append(c.Middle, e.handle[routerKey(method, addr)])
+	pattern := routerKey(method, "/"+strings.Join(patterns, "/"))
+	c.Middle = append(c.Middle, e.handle[pattern])
 	c.Next()
 }
 
