@@ -122,3 +122,26 @@ handle next
 later
 
 由于通过use注册进去函数
+
+
+day: 6 
+1. template 库学习
+2. web server 返回静态文件
+3. web server 返回渲染html
+
+http接口不太熟悉但是没有必要学了，之后整理一下知识点好了， 用来方便后面重写（todo: http/template  http/fileserver）
+最近好像有点感觉了，基于接口的编程
+
+总结 3.8
+技巧训练
+1. next实现, next之上优先执行, next之下最后执行, 由于handle在最后一个, handle中间执行
+2. group和router实现, group和router中间相互有关系
+3. 传入传出最好是高纬度对象
+4. 架构   --》 router(tree) group context 
+
+
+5. 确定高等级接口
+6. 在实现低级接口
+7. 好像架构有些问题，最后需要重新梳理架构并且重新实现一遍（todo）
+
+

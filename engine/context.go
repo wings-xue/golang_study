@@ -3,6 +3,7 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 )
@@ -58,10 +59,15 @@ func (c *Context) Data(code int, data []byte) {
 	c.Writer.Write(data)
 }
 
-func (c *Context) HTML(code int, html string) {
+func (c *Context) HTML(code int, data interface{}) {
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)
-	c.Writer.Write([]byte(html))
+	t, err := template.ParseFiles("D:/code/wing-xue/golang_study/templates/custom_func.tmpl")
+	if err != nil {
+		c.Writer.Write([]byte(err.Error()))
+	}
+	t.Execute(c.Writer, data)
+	// c.Writer.Write([]byte(html))
 }
 
 func (c *Context) FindParam(paths, patterns []string) {
