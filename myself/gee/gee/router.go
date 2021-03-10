@@ -2,7 +2,7 @@ package gee
 
 import "net/http"
 
-type HandleFunc func(http.ResponseWriter, *http.Request)
+type HandleFunc func(*Context)
 
 type Router struct {
 	handle map[string]HandleFunc
@@ -39,8 +39,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte("400 not find"))
 		return
 	}
-
-	handle(w, req)
+	context := NewContext(req, w)
+	context.param(node.pattern, path)
+	handle(context)
 
 }
 

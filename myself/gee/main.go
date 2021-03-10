@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gee/gee"
 	"html"
-	"net/http"
 )
 
 func main() {
@@ -13,8 +12,8 @@ func main() {
 
 	router := gee.Default()
 
-	router.GET("/bar/:name", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+	router.GET("/bar/:name", func(c *gee.Context) {
+		fmt.Fprintf(c.W, "Hello, %q", html.EscapeString(c.Param("name")))
 	})
 
 	// By default it serves on :8080 unless a
