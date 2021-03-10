@@ -9,11 +9,16 @@ func main() {
 
 	r := engine.New()
 	r.Use(engine.Logger()) // global midlleware
+	r.Use(engine.Recovery())
 	r.Static("/static", "readme.md")
 	r.GET("/", func(c *engine.Context) {
 		c.String(http.StatusOK, "<h1>Hello engine</h1>")
 	})
 
+	r.GET("/panic", func(c *engine.Context) {
+		names := []string{"geektutu"}
+		c.String(http.StatusOK, names[100])
+	})
 	v2 := r.Group("/v2")
 	v2.Use(engine.OnlyForV2()) // v2 group middleware
 
