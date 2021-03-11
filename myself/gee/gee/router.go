@@ -1,52 +1,28 @@
 package gee
 
-import "net/http"
-
 type HandleFunc func(*Context)
 
 type Router struct {
 	handle map[string]HandleFunc
-	root   *Node
-}
-
-func Default() *Router {
-	return &Router{
-		handle: make(map[string]HandleFunc),
-		root:   NewRoot(),
-	}
+	root   map[string]*Node
 }
 
 func (r *Router) addRouter(method, pattern string, handle HandleFunc) {
 	r.handle[method+"-"+pattern] = handle
-	r.root.insert(pattern, parsePath(pattern), 0)
-}
+	if n, ok := r.root[method]; ok {
+		n.insert(pattern, parsePath(pattern), 0)
+	} else {
+		n := NewRoot()
+		n.insert(pattern, parsePath(pattern), 0)
+		r.root[method] = n
 
-func (r *Router) GET(pattern string, handle HandleFunc) {
-	r.addRouter("GET", pattern, handle)
-}
-
-func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	method := req.Method
-	path := req.URL.Path
-	node := r.root.search(path, parsePath(path), 0)
-	if node == nil {
-		w.Write([]byte("400 not find"))
-		return
 	}
-
-	handle, ok := r.handle[method+"-"+node.pattern]
-	if !ok {
-		w.Write([]byte("400 not find"))
-		return
-	}
-	context := NewContext(req, w)
-	context.param(node.pattern, path)
-	handle(context)
-
 }
 
-func (r *Router) Run() {
-
-	http.ListenAndServe(":8080", r)
-
+func (r *Router) getRouter(method, path string) (string, HandleFunc) {
+	if n, ok := r.root[method]; ok {
+		node := n.search(path, parsePath(path), 0)
+		return node.pattern, r.handle[method+"-"+node.pattern]
+	}
+	return "", nil
 }

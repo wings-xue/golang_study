@@ -9,6 +9,8 @@ type Context struct {
 	Req    *http.Request
 	W      http.ResponseWriter
 	Params map[string]string
+	Middle []HandleFunc
+	index  int
 }
 
 func NewContext(req *http.Request, w http.ResponseWriter) *Context {
@@ -16,6 +18,8 @@ func NewContext(req *http.Request, w http.ResponseWriter) *Context {
 		Req:    req,
 		W:      w,
 		Params: make(map[string]string),
+		Middle: make([]HandleFunc, 0),
+		index:  -1,
 	}
 }
 
@@ -38,4 +42,11 @@ func (c *Context) param(pattern, path string) {
 
 	}
 
+}
+
+func (c *Context) Next() {
+	c.index = c.index + 1
+	for ; c.index < len(c.Middle); c.index++ {
+		c.Middle[c.index](c)
+	}
 }
